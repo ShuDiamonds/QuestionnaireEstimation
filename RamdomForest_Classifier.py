@@ -27,6 +27,7 @@ from sklearn.grid_search import GridSearchCV
 
 labels=['One','Two', 'Three', 'Four','Five']
 usersdf_cmx=pd.DataFrame(np.zeros((5,5),dtype=int),index=labels, columns=labels)
+usersdf_result=pd.DataFrame()
 def print_cmx(y_true, y_pred):
     #labels = sorted(list(set(y_true)))
     
@@ -85,8 +86,9 @@ if __name__ == '__main__':
                   "Mousedisplacement_lower50"
                   ]
         
-        Chairlist=['Rotation_Max', 'Rotation_Std', 'Rotation_Mean',"Rotation_lower05", 'Sag_mean',"Sag_std",
-                    "Compass_mean",
+        Chairlist=['Rotation_Max', 'Rotation_Std', 'Rotation_Mean',"Rotation_lower05", 'Sag_mean',"Sag_std"]
+
+        Chusionlist=["Compass_mean",
                     "Compass_std",
                     "Posture_RightLeft_Mean",
                     "Posture_RightLeft_Max",
@@ -96,12 +98,11 @@ if __name__ == '__main__':
                     "Posture_Rear_Std",
                     "Posture_Front_Mean",
                     "Posture_Front_Max",
-                    "Posture_Front_Std"
-                    ]
+                    "Posture_Front_Std"]
         
         
         # 説明変数、目的変数
-        X = df[PCdatalist+Chairlist ]
+        X = df[PCdatalist+Chairlist+Chusionlist]
         tmp=list()
         Qnum="Q4"
         tmp=copy.deepcopy(df[Qnum])
@@ -233,6 +234,7 @@ if __name__ == '__main__':
         
         df_result.to_csv(output_path+"5Grade Classification Accuracy.csv")
         print("########## 結果 ###########")
+        usersdf_result=usersdf_result.append(df_result)
         print(df_result.mean())
         print(df_result.std())
         
@@ -283,6 +285,10 @@ if __name__ == '__main__':
     plt.tick_params(labelsize=20)
     plt.savefig("./result/"+"confusion matrix-5grades.png", dpi=300)
     plt.show()
+    
+    print("########## 結果 ###########")
+    print(usersdf_result.mean())
+    print(usersdf_result.std())
     
     progress_e_time = time.time()
     progress_i_time = progress_e_time - progress_s_time
