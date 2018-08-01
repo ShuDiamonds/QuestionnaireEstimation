@@ -82,24 +82,29 @@ if __name__ == '__main__':
                         "Q4":QuestionnaireData_df[QestionaireTime.strftime('%Y-%m-%d %H:%M:%S')].values[0][3],
                         "Lclick_Mean":tmpData["clickCNTL"].mean(),
                         "Lclick_Std":tmpData["clickCNTL"].std(),
+                        "Lclick_oneclick":tmpData["clickCNTL"][tmpData["clickCNTL"]==1].count(),
+                        "Lclick_doubleclick":tmpData["clickCNTL"][tmpData["clickCNTL"]==2].count(),
                         "Rclick_Mean":tmpData["clickCNTR"].mean(),
                         "Rclick_Std":tmpData["clickCNTR"].std(),
                         "Mclick_Mean":tmpData["clickCNTM"].mean(),
                         "Mclick_Std":tmpData["clickCNTM"].std(),
                         "Mousedisplacement_Sum":tmpData["MouseDisplacement"].sum(),
+                        "Mousedisplacement_lower50": tmpData["MouseDisplacement"][tmpData["MouseDisplacement"]<50].count()/len(tmpData["MouseDisplacement"]),    
                         "MouseSpeed_Max":tmpData["MouseSpeedMax"].max(),
                         "MouseWheel_Mean":tmpData["MouseWheelAmount"].mean(),
                         "KeyType_Count":tmpData["KeyTypeCNT"].sum(),
                         "KeyTypeDel_Count":tmpData["KeyTypeDelCNT"].sum(),
                         "KeyTypeBack_Count":tmpData["KeyTypeBackCNT"].sum(),
                         "KeyTypeEnter_Count":tmpData["KeyTypeEnterCNT"].sum(),
+                        "mistyping_Count":(tmpData["KeyTypeBackCNT"]+tmpData["KeyTypeDelCNT"]).value_counts().count(),
                         "AppName_Count":tmpData["AppName"].value_counts().count(),
                         
                         "Sag_mean":tmpData["Sag"].mean(),
                         "Sag_std":tmpData["Sag"].std(),
                         "Rotation_Mean":tmpData["Rotation"].mean(),
                         "Rotation_Max":tmpData["Rotation"].max(),
-                        "Rotation_Std":tmpData["Rotation"].std()
+                        "Rotation_Std":tmpData["Rotation"].std(),
+                        "Rotation_lower05": tmpData["Rotation"][np.abs(tmpData["Rotation"])<0.5].count()/len(tmpData["Rotation"])     
                         })
                 
             OutputDataset=OutputDataset.append(tmpFeaturesData,ignore_index=True)

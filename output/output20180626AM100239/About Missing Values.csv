@@ -5,11 +5,14 @@ KeyTypeEnter_Count,0.0
 KeyType_Count,0.0
 Lclick_Mean,0.0
 Lclick_Std,0.0
+Lclick_doubleclick,0.0
+Lclick_oneclick,0.0
 Mclick_Mean,0.0
 Mclick_Std,0.0
 MouseSpeed_Max,0.0
 MouseWheel_Mean,0.0
 Mousedisplacement_Sum,0.0
+Mousedisplacement_lower50,0.0
 Q1,0.0
 Q2,0.0
 Q3,0.0
@@ -19,5 +22,7 @@ Rclick_Std,0.0
 Rotation_Max,13.043478260869565
 Rotation_Mean,13.043478260869565
 Rotation_Std,13.043478260869565
+Rotation_lower05,0.0
 Sag_mean,13.043478260869565
 Sag_std,13.043478260869565
+mistyping_Count,0.0
