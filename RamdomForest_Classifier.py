@@ -28,6 +28,7 @@ from sklearn.grid_search import GridSearchCV
 labels=['One','Two', 'Three', 'Four','Five']
 usersdf_cmx=pd.DataFrame(np.zeros((5,5),dtype=int),index=labels, columns=labels)
 usersdf_result=pd.DataFrame()
+usersdf_feat_importance=pd.DataFrame()
 def print_cmx(y_true, y_pred):
     #labels = sorted(list(set(y_true)))
     
@@ -130,7 +131,7 @@ if __name__ == '__main__':
             
             
             
-            print("################## ランダムフォレスト ##################")
+            #print("################## ランダムフォレスト ##################")
             #ランダムフォレスト
             # 引数の解説　https://data-science.gr.jp/implementation/iml_sklearn_random_forest.html
             # 不均衡データの時：　https://hayataka2049.hatenablog.jp/entry/2018/05/17/123000
@@ -157,12 +158,12 @@ if __name__ == '__main__':
             Recall_randomforest=sklearn.metrics.recall_score(y_test, y_test_pred,average="weighted")
             Fmeasure_randomforest=sklearn.metrics.f1_score(y_test, y_test_pred,average="weighted")
             # 出力
-            print('Accuracy: ' +str(Accuracy_randomforest))
-            print('Precision: ' +str(Precision_randomforest))
-            print('Recall: ' +str(Recall_randomforest))
-            print('Fmeasure: ' +str(Fmeasure_randomforest))
+            #print('Accuracy: ' +str(Accuracy_randomforest))
+            #print('Precision: ' +str(Precision_randomforest))
+            #print('Recall: ' +str(Recall_randomforest))
+            #print('Fmeasure: ' +str(Fmeasure_randomforest))
             
-            print("################## Confusion matrix ##################")
+            #print("################## Confusion matrix ##################")
             #print_cmx(y,forest.predict(X))
             # 出力
             
@@ -234,12 +235,14 @@ if __name__ == '__main__':
             """
         
         df_result.to_csv(output_path+"5Grade Classification Accuracy.csv")
-        print("########## 結果 ###########")
+        print("########## {0}の結果 ###########".format(username))
+        print("データ件数：{0}".format(df.shape[0]))
         usersdf_result=usersdf_result.append(df_result)
         print(df_result.mean())
         print(df_result.std())
         
         print("################## 変数の重要度 ##################")
+        usersdf_feat_importance=usersdf_feat_importance.append(df_feat_importance.mean(),ignore_index=True)
         print('Feature Importances:')
         print(df_feat_importance.mean().sort_values(ascending=False))
         df_feat_importance.mean().sort_values(ascending=False).to_csv(output_path+"feat_importance.csv")
@@ -256,7 +259,7 @@ if __name__ == '__main__':
         df_cmx2=copy.copy(df_cmx)
         a=[]
         for key,row in df_cmx.iterrows():
-            print((row/df_cmx.sum(axis=1)[key]).values)
+            #print((row/df_cmx.sum(axis=1)[key]).values)
             a.append((row/df_cmx.sum(axis=1)[key]).values)
         df_cmx2=pd.DataFrame(a,index=labels, columns=labels)
         #df_cmx2 = df_cmx / df_cmx.sum(axis=1)
@@ -278,7 +281,7 @@ if __name__ == '__main__':
     df_cmx2=copy.copy(usersdf_cmx)
     a=[]
     for key,row in usersdf_cmx.iterrows():
-        print((row/usersdf_cmx.sum(axis=1)[key]).values)
+        #print((row/usersdf_cmx.sum(axis=1)[key]).values)
         a.append((row/usersdf_cmx.sum(axis=1)[key]).values)
     df_cmx2=pd.DataFrame(a,index=labels, columns=labels)
     sn.heatmap(data=df_cmx2, annot=True,annot_kws={'size': 15},square=True,cmap="Greys",fmt=".0%",cbar=None)
@@ -289,6 +292,10 @@ if __name__ == '__main__':
     print("########## 結果 ###########")
     print(usersdf_result.mean())
     print(usersdf_result.std())
+    
+    print("################## 変数の重要度 ##################")
+    print(usersdf_feat_importance.mean().sort_values(ascending=False))
+    usersdf_feat_importance.mean().sort_values(ascending=False).to_csv("./result/"+"feat_importance.csv")
     
     progress_e_time = time.time()
     progress_i_time = progress_e_time - progress_s_time
