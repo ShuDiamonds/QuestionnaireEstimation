@@ -89,7 +89,7 @@ if __name__ == '__main__':
         Chairlist=['Rotation_Max', 'Rotation_Std', 'Rotation_Mean',"Rotation_lower05", 'Sag_mean',"Sag_std"]
 
         Chusionlist=["Compass_mean",
-                    "Compass_std",
+                    #"Compass_std",
                     "Posture_RightLeft_Mean",
                     "Posture_RightLeft_Max",
                     "Posture_RightLeft_Std",
@@ -169,10 +169,8 @@ if __name__ == '__main__':
             df_cmx = df_cmx + pd.DataFrame(cmx_data, index=labels, columns=labels)
             
             
-            print("################## 変数の重要度 ##################")
-            print('Feature Importances:')
+            ################## 変数の重要度 ##################
             feat_importance=pd.Series(forest.feature_importances_,index=X.keys())
-            print(feat_importance.sort_values(ascending=False))
             df_feat_importance=df_feat_importance.append(feat_importance,ignore_index=True)
             
                 
@@ -240,9 +238,8 @@ if __name__ == '__main__':
         
         print("################## 変数の重要度 ##################")
         print('Feature Importances:')
-        feat_importance=pd.Series(forest.feature_importances_,index=X.keys())
         print(df_feat_importance.mean().sort_values(ascending=False))
-        feat_importance.to_csv(output_path+"feat_importance.csv")
+        df_feat_importance.mean().sort_values(ascending=False).to_csv(output_path+"feat_importance.csv")
         
         print("################## Confusion matrix ##################")
         usersdf_cmx=usersdf_cmx+df_cmx

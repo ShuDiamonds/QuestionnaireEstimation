@@ -73,8 +73,60 @@ if __name__ == '__main__':
         
         
             for QestionaireTime in QuestionnaireData_df.index:
-                StartTime=QestionaireTime+datetime.timedelta(minutes=-15)
+                StartTime=QestionaireTime+datetime.timedelta(minutes=-5)
                 EndTime=QestionaireTime
+                print(StartTime)
+                tmpData=DeskworkData_df[StartTime:EndTime]
+                tmpData=tmpData.drop(["AppName","Memo","Unnamed: 23"],axis=1).astype(float) #文字列を削除する（NaNを含む列がobject型として読み込まれるから、文字列を含む列を全部消してそのあとastypeでfloatに変換してる）
+                tmpFeaturesData=pd.Series({
+                            "Time":EndTime,
+                            "Q1":QuestionnaireData_df[QestionaireTime.strftime('%Y-%m-%d %H:%M:%S')].values[0][0],
+                            "Q2":QuestionnaireData_df[QestionaireTime.strftime('%Y-%m-%d %H:%M:%S')].values[0][1],
+                            "Q3":QuestionnaireData_df[QestionaireTime.strftime('%Y-%m-%d %H:%M:%S')].values[0][2],
+                            "Q4":QuestionnaireData_df[QestionaireTime.strftime('%Y-%m-%d %H:%M:%S')].values[0][3],
+                            "Lclick_Mean":tmpData["clickCNTL"].mean(),
+                            "Lclick_Std":tmpData["clickCNTL"].std(),
+                            "Lclick_oneclick":tmpData["clickCNTL"][tmpData["clickCNTL"]==1].count(),
+                            "Lclick_doubleclick":tmpData["clickCNTL"][tmpData["clickCNTL"]==2].count(),
+                            "Rclick_Mean":tmpData["clickCNTR"].mean(),
+                            "Rclick_Std":tmpData["clickCNTR"].std(),
+                            "Mclick_Mean":tmpData["clickCNTM"].mean(),
+                            "Mclick_Std":tmpData["clickCNTM"].std(),
+                            "Mousedisplacement_Sum":tmpData["MouseDisplacement"].sum(),
+                            "Mousedisplacement_lower50": tmpData["MouseDisplacement"][tmpData["MouseDisplacement"]<50].count()/len(tmpData["MouseDisplacement"]),    
+                            "MouseSpeed_Max":tmpData["MouseSpeedMax"].max(),
+                            "MouseWheel_Mean":tmpData["MouseWheelAmount"].mean(),
+                            "KeyType_Count":tmpData["KeyTypeCNT"].sum(),
+                            "KeyTypeDel_Count":tmpData["KeyTypeDelCNT"].sum(),
+                            "KeyTypeBack_Count":tmpData["KeyTypeBackCNT"].sum(),
+                            "KeyTypeEnter_Count":tmpData["KeyTypeEnterCNT"].sum(),
+                            "mistyping_Count":(tmpData["KeyTypeBackCNT"]+tmpData["KeyTypeDelCNT"]).value_counts().count(),
+                            
+                            "Sag_mean":tmpData["Sag"].dropna().mean(),
+                            "Sag_std":tmpData["Sag"].dropna().std(),
+                            "Rotation_Mean":tmpData["Rotation"].dropna().mean(),
+                            "Rotation_Max":tmpData["Rotation"].dropna().max(),
+                            "Rotation_Std":tmpData["Rotation"].dropna().std(),
+                            "Rotation_lower05": tmpData["Rotation"].dropna()[np.abs(tmpData["Rotation"].dropna())<0.5].count()/len(tmpData["Rotation"].dropna()),
+                            
+                            "Compass_mean":tmpData["Compass"].dropna().mean(),
+                            "Compass_std":tmpData["Compass"].dropna().std(),
+                            "Posture_RightLeft_Mean":tmpData["Posture_RightLeft"].dropna().mean(),
+                            "Posture_RightLeft_Max":tmpData["Posture_RightLeft"].dropna().max(),
+                            "Posture_RightLeft_Std":tmpData["Posture_RightLeft"].dropna().std(),
+                            "Posture_Rear_Mean":tmpData["Posture_Rear"].dropna().mean(),
+                            "Posture_Rear_Max":tmpData["Posture_Rear"].dropna().max(),
+                            "Posture_Rear_Std":tmpData["Posture_Rear"].dropna().std(),
+                            "Posture_Front_Mean":tmpData["Posture_Front"].dropna().mean(),
+                            "Posture_Front_Max":tmpData["Posture_Front"].dropna().max(),
+                            "Posture_Front_Std":tmpData["Posture_Front"].dropna().std()
+                            })
+                    
+                OutputDataset=OutputDataset.append(tmpFeaturesData,ignore_index=True)
+                
+                ###################　後半のデータを追加 #################
+                StartTime=QestionaireTime
+                EndTime=QestionaireTime+datetime.timedelta(minutes=5)
                 print(StartTime)
                 tmpData=DeskworkData_df[StartTime:EndTime]
                 tmpData=tmpData.drop(["AppName","Memo","Unnamed: 23"],axis=1).astype(float) #文字列を削除する（NaNを含む列がobject型として読み込まれるから、文字列を含む列を全部消してそのあとastypeでfloatに変換してる）
