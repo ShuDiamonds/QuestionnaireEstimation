@@ -132,7 +132,10 @@ if __name__ == '__main__':
             
             print("################## ランダムフォレスト ##################")
             #ランダムフォレスト
+            # 引数の解説　https://data-science.gr.jp/implementation/iml_sklearn_random_forest.html
+            # 不均衡データの時：　https://hayataka2049.hatenablog.jp/entry/2018/05/17/123000
             forest = RandomForestClassifier(n_estimators=150, 
+            #class_weight="balanced",
             criterion='gini', 
             max_depth=None, 
             min_samples_split=2, 
@@ -140,7 +143,7 @@ if __name__ == '__main__':
             max_features='auto', 
             max_leaf_nodes=None, 
             bootstrap=True, 
-            oob_score=False, 
+            oob_score=True, 
             n_jobs=1, 
             random_state=1, 
             verbose=0
