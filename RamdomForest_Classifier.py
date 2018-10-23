@@ -54,7 +54,7 @@ if __name__ == '__main__':
     progress_s_time = time.time()
     
     not_exist_mkdir("./result")
-    
+    thesisdata={}
     for username in os.listdir( "./output/" ):
         df=pd.DataFrame()
         for datafoldername in os.listdir( "./output/"+username ):
@@ -62,6 +62,9 @@ if __name__ == '__main__':
             df=pd.concat([df,df1])
         output_path = "./result/"+username+"/"
         not_exist_mkdir(output_path)
+        
+        #論文ようにデータを集計
+        thesisdata[username+"_dataset num"]=df.shape[0]
         # 使用する列の選択
         
         #print(list(df.keys()))
@@ -114,7 +117,12 @@ if __name__ == '__main__':
         tmp[df[Qnum]==5]="Five"
         y=tmp
         
-        
+        #
+        plt.figure()
+        df[Qnum].plot(kind="hist")
+        plt.savefig(output_path+"trainingdata-hist.png")
+        plt.close('all')
+            
         # 学習用、検証用データに分割
         from sklearn.cross_validation import train_test_split
         df_result=pd.DataFrame()
@@ -289,7 +297,7 @@ if __name__ == '__main__':
     plt.savefig("./result/"+"confusion matrix-5grades.png", dpi=300)
     plt.show()
     
-    print("########## 結果 ###########")
+    print("########## 全体の推定結果 ###########")
     print(usersdf_result.mean())
     print(usersdf_result.std())
     
