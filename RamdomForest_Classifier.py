@@ -74,39 +74,65 @@ if __name__ == '__main__':
                     'KeyTypeBack_Count',
                   'KeyTypeDel_Count',
                   'KeyTypeEnter_Count',
+                  "KeyTypeEnter_raito",#ADD
                   'KeyType_Count',
                   "mistyping_Count",
+                  "mistyping_raito",#ADD
                   'Lclick_Mean',
-                  'Lclick_Std',
+                  "Lclick_cnt", #ADD
+                  #'Lclick_Std',
                   "Lclick_oneclick",
                   "Lclick_doubleclick",
                   "Rclick_Mean",
-                  "Rclick_Std",
+                  #"Rclick_Std",
                   #'Mclick_Mean',
-                  'Mclick_Std',
+                  #'Mclick_Std',
                   'MouseSpeed_Max',
-                  'MouseWheel_Mean',
+                  #'MouseWheel_Mean',
                   'Mousedisplacement_Sum',
                   "Mousedisplacement_lower50"
                   ]
         
-        Chairlist=['Rotation_Max', 'Rotation_Std', 'Rotation_Mean',"Rotation_lower05", 'Sag_mean',"Sag_std"]
+        Chairlist=[
+        'Rotation_Max',
+        "Rotation_Min", #ADD
+        'Rotation_Std', 
+        'Rotation_Mean',
+        "Rotation_lower05", 
+        'Sag_mean',
+        "Sag_std"
+        ]
+        
 
         Chusionlist=["Compass_mean",
                     #"Compass_std",
                     "Posture_RightLeft_Mean",
                     "Posture_RightLeft_Max",
                     "Posture_RightLeft_Std",
+                    "Posture_RightLeft_diffMax",#ADD
+                    "Posture_RightLeft_upperRaito",#ADD
                     "Posture_Rear_Mean",
                     "Posture_Rear_Max",
                     "Posture_Rear_Std",
+                    "Posture_Rear_diffMax",#ADD
+                    "Posture_Rear_upperRaito",#ADD
                     "Posture_Front_Mean",
                     "Posture_Front_Max",
-                    "Posture_Front_Std"]
+                    "Posture_Front_Std",
+                    "Posture_Front_diffMax",#ADD
+                    "Posture_Front_upperRaito" #ADD
+                    ]
         
+        BESTvariables=['Sag_mean', 'Mousedisplacement_Sum', 'Compass_mean', 'Rotation_Std',
+       'Posture_RightLeft_Mean', 'Posture_Front_Mean', 'Rotation_Mean',
+       'Mousedisplacement_lower50', 'Rotation_Min', 'Posture_Rear_Std',
+       'Sag_std', 'Rotation_Max', 'Posture_Rear_Mean', 'Posture_Front_Std',
+       'Lclick_Mean']
+        # command : usersdf_feat_importance.mean().sort_values(ascending=False).head(10).index
         
         # 説明変数、目的変数
         X = df[PCdatalist+Chairlist+Chusionlist]
+        #X = df[BESTvariables]
         tmp=list()
         Qnum="Q4"
         tmp=copy.deepcopy(df[Qnum])

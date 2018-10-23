@@ -64,8 +64,16 @@ if __name__ == '__main__':
             #デスクワークデータの読み込み
             DeskworkDatafilepath=input_path+"output.csv"
             DeskData_parser = lambda d: pd.datetime.strptime(d, "%Y/%m/%d %H:%M:%S")
-            DeskworkData_df=pd.read_csv(DeskworkDatafilepath,index_col='TimeStamp',parse_dates=True, date_parser=DeskData_parser,keep_default_na=False,na_values="NaN")
-            #デスクワークデータの読み込み
+            DeskworkData_df=pd.read_csv(DeskworkDatafilepath,index_col='TimeStamp',parse_dates=True, date_parser=DeskData_parser,keep_default_na=False,na_values=["NaN","∞"])
+            #デスクワークデータの前処理2
+            
+            DeskworkData_df.loc[DeskworkData_df["Posture_Front"]>1,"Posture_Front"]=1
+            DeskworkData_df.loc[DeskworkData_df["Posture_Rear"]>1,"Posture_Rear"]=1
+            DeskworkData_df.loc[DeskworkData_df["Posture_RightLeft"]>1,"Posture_RightLeft"]=1
+            #DeskworkData_df["Posture_Front"]=DeskworkData_df["Posture_Front"].astype(float)
+            #DeskworkData_df["Posture_Front"]=DeskworkData_df["Posture_Front"].where(DeskworkData_df["Posture_Front"]>1,1)
+            
+            #アンケートデータの読み込み
             QuestionnaireDatafilepath=input_path+"Questionnaire.csv"
             QuestionnaireData_df=pd.read_csv(QuestionnaireDatafilepath,index_col='TimeStamp',parse_dates=True, date_parser=DeskData_parser)
             
@@ -73,7 +81,7 @@ if __name__ == '__main__':
         
         
             for QestionaireTime in QuestionnaireData_df.index:
-                StartTime=QestionaireTime+datetime.timedelta(minutes=-5)
+                StartTime=QestionaireTime+datetime.timedelta(minutes=-10)
                 EndTime=QestionaireTime
                 print(StartTime)
                 tmpData=DeskworkData_df[StartTime:EndTime]
@@ -85,6 +93,7 @@ if __name__ == '__main__':
                             "Q3":QuestionnaireData_df[QestionaireTime.strftime('%Y-%m-%d %H:%M:%S')].values[0][2],
                             "Q4":QuestionnaireData_df[QestionaireTime.strftime('%Y-%m-%d %H:%M:%S')].values[0][3],
                             "Lclick_Mean":tmpData["clickCNTL"].mean(),
+                            "Lclick_cnt":np.sum(tmpData["clickCNTL"]>0), #ADD
                             "Lclick_Std":tmpData["clickCNTL"].std(),
                             "Lclick_oneclick":tmpData["clickCNTL"][tmpData["clickCNTL"]==1].count(),
                             "Lclick_doubleclick":tmpData["clickCNTL"][tmpData["clickCNTL"]==2].count(),
@@ -93,19 +102,22 @@ if __name__ == '__main__':
                             "Mclick_Mean":tmpData["clickCNTM"].mean(),
                             "Mclick_Std":tmpData["clickCNTM"].std(),
                             "Mousedisplacement_Sum":tmpData["MouseDisplacement"].sum(),
-                            "Mousedisplacement_lower50": tmpData["MouseDisplacement"][tmpData["MouseDisplacement"]<50].count()/len(tmpData["MouseDisplacement"]),    
+                            "Mousedisplacement_lower50": tmpData["MouseDisplacement"][tmpData["MouseDisplacement"]<200].count()/len(tmpData["MouseDisplacement"]),    
                             "MouseSpeed_Max":tmpData["MouseSpeedMax"].max(),
                             "MouseWheel_Mean":tmpData["MouseWheelAmount"].mean(),
                             "KeyType_Count":tmpData["KeyTypeCNT"].sum(),
                             "KeyTypeDel_Count":tmpData["KeyTypeDelCNT"].sum(),
                             "KeyTypeBack_Count":tmpData["KeyTypeBackCNT"].sum(),
                             "KeyTypeEnter_Count":tmpData["KeyTypeEnterCNT"].sum(),
+                            "KeyTypeEnter_raito":tmpData["KeyTypeEnterCNT"].sum()/max(1,tmpData["KeyTypeCNT"].sum()),  #ADD                          
                             "mistyping_Count":(tmpData["KeyTypeBackCNT"]+tmpData["KeyTypeDelCNT"]).value_counts().count(),
+                            "mistyping_raito":(tmpData["KeyTypeBackCNT"]+tmpData["KeyTypeDelCNT"]).dropna().sum()/max(1,tmpData["KeyTypeCNT"].dropna().sum()), #ADD
                             
                             "Sag_mean":tmpData["Sag"].dropna().mean(),
                             "Sag_std":tmpData["Sag"].dropna().std(),
                             "Rotation_Mean":tmpData["Rotation"].dropna().mean(),
                             "Rotation_Max":tmpData["Rotation"].dropna().max(),
+                            "Rotation_Min":tmpData["Rotation"].dropna().min(),      #ADD  
                             "Rotation_Std":tmpData["Rotation"].dropna().std(),
                             "Rotation_lower05": tmpData["Rotation"].dropna()[np.abs(tmpData["Rotation"].dropna())<0.5].count()/len(tmpData["Rotation"].dropna()),
                             
@@ -114,19 +126,25 @@ if __name__ == '__main__':
                             "Posture_RightLeft_Mean":tmpData["Posture_RightLeft"].dropna().mean(),
                             "Posture_RightLeft_Max":tmpData["Posture_RightLeft"].dropna().max(),
                             "Posture_RightLeft_Std":tmpData["Posture_RightLeft"].dropna().std(),
+                            "Posture_RightLeft_diffMax":tmpData["Posture_RightLeft"].dropna().diff().max(), #ADD
+                            "Posture_RightLeft_upperRaito":tmpData["Posture_RightLeft"][tmpData["Posture_RightLeft"]<tmpData["Posture_RightLeft"].dropna().mean()].count()/len(tmpData["Posture_RightLeft"]), #ADD
                             "Posture_Rear_Mean":tmpData["Posture_Rear"].dropna().mean(),
                             "Posture_Rear_Max":tmpData["Posture_Rear"].dropna().max(),
                             "Posture_Rear_Std":tmpData["Posture_Rear"].dropna().std(),
+                            "Posture_Rear_diffMax":tmpData["Posture_Rear"].dropna().diff().max(), #ADD
+                            "Posture_Rear_upperRaito":tmpData["Posture_Rear"][tmpData["Posture_Rear"]<tmpData["Posture_Rear"].dropna().mean()].count()/len(tmpData["Posture_Rear"]), #ADD
                             "Posture_Front_Mean":tmpData["Posture_Front"].dropna().mean(),
                             "Posture_Front_Max":tmpData["Posture_Front"].dropna().max(),
-                            "Posture_Front_Std":tmpData["Posture_Front"].dropna().std()
+                            "Posture_Front_Std":tmpData["Posture_Front"].dropna().std(),
+                            "Posture_Front_diffMax":tmpData["Posture_Front"].dropna().diff().max(), #ADD
+                            "Posture_Front_upperRaito":tmpData["Posture_Front"][tmpData["Posture_Front"]<tmpData["Posture_Front"].dropna().mean()].count()/len(tmpData["Posture_Front"]), #ADD
                             })
                     
                 OutputDataset=OutputDataset.append(tmpFeaturesData,ignore_index=True)
                 
                 ###################　後半のデータを追加 #################
                 StartTime=QestionaireTime
-                EndTime=QestionaireTime+datetime.timedelta(minutes=5)
+                EndTime=QestionaireTime+datetime.timedelta(minutes=10)
                 print(StartTime)
                 tmpData=DeskworkData_df[StartTime:EndTime]
                 tmpData=tmpData.drop(["AppName","Memo","Unnamed: 23"],axis=1).astype(float) #文字列を削除する（NaNを含む列がobject型として読み込まれるから、文字列を含む列を全部消してそのあとastypeでfloatに変換してる）
@@ -137,6 +155,7 @@ if __name__ == '__main__':
                             "Q3":QuestionnaireData_df[QestionaireTime.strftime('%Y-%m-%d %H:%M:%S')].values[0][2],
                             "Q4":QuestionnaireData_df[QestionaireTime.strftime('%Y-%m-%d %H:%M:%S')].values[0][3],
                             "Lclick_Mean":tmpData["clickCNTL"].mean(),
+                            "Lclick_cnt":np.sum(tmpData["clickCNTL"]>0), #ADD
                             "Lclick_Std":tmpData["clickCNTL"].std(),
                             "Lclick_oneclick":tmpData["clickCNTL"][tmpData["clickCNTL"]==1].count(),
                             "Lclick_doubleclick":tmpData["clickCNTL"][tmpData["clickCNTL"]==2].count(),
@@ -145,19 +164,22 @@ if __name__ == '__main__':
                             "Mclick_Mean":tmpData["clickCNTM"].mean(),
                             "Mclick_Std":tmpData["clickCNTM"].std(),
                             "Mousedisplacement_Sum":tmpData["MouseDisplacement"].sum(),
-                            "Mousedisplacement_lower50": tmpData["MouseDisplacement"][tmpData["MouseDisplacement"]<50].count()/len(tmpData["MouseDisplacement"]),    
+                            "Mousedisplacement_lower50": tmpData["MouseDisplacement"][tmpData["MouseDisplacement"]<200].count()/len(tmpData["MouseDisplacement"]),    
                             "MouseSpeed_Max":tmpData["MouseSpeedMax"].max(),
                             "MouseWheel_Mean":tmpData["MouseWheelAmount"].mean(),
                             "KeyType_Count":tmpData["KeyTypeCNT"].sum(),
                             "KeyTypeDel_Count":tmpData["KeyTypeDelCNT"].sum(),
                             "KeyTypeBack_Count":tmpData["KeyTypeBackCNT"].sum(),
                             "KeyTypeEnter_Count":tmpData["KeyTypeEnterCNT"].sum(),
+                            "KeyTypeEnter_raito":tmpData["KeyTypeEnterCNT"].sum()/max(1,tmpData["KeyTypeCNT"].sum()),  #ADD                          
                             "mistyping_Count":(tmpData["KeyTypeBackCNT"]+tmpData["KeyTypeDelCNT"]).value_counts().count(),
+                            "mistyping_raito":(tmpData["KeyTypeBackCNT"]+tmpData["KeyTypeDelCNT"]).dropna().sum()/max(1,tmpData["KeyTypeCNT"].dropna().sum()), #ADD
                             
                             "Sag_mean":tmpData["Sag"].dropna().mean(),
                             "Sag_std":tmpData["Sag"].dropna().std(),
                             "Rotation_Mean":tmpData["Rotation"].dropna().mean(),
                             "Rotation_Max":tmpData["Rotation"].dropna().max(),
+                            "Rotation_Min":tmpData["Rotation"].dropna().min(),      #ADD  
                             "Rotation_Std":tmpData["Rotation"].dropna().std(),
                             "Rotation_lower05": tmpData["Rotation"].dropna()[np.abs(tmpData["Rotation"].dropna())<0.5].count()/len(tmpData["Rotation"].dropna()),
                             
@@ -166,12 +188,18 @@ if __name__ == '__main__':
                             "Posture_RightLeft_Mean":tmpData["Posture_RightLeft"].dropna().mean(),
                             "Posture_RightLeft_Max":tmpData["Posture_RightLeft"].dropna().max(),
                             "Posture_RightLeft_Std":tmpData["Posture_RightLeft"].dropna().std(),
+                            "Posture_RightLeft_diffMax":tmpData["Posture_RightLeft"].dropna().diff().max(), #ADD
+                            "Posture_RightLeft_upperRaito":tmpData["Posture_RightLeft"][tmpData["Posture_RightLeft"]<tmpData["Posture_RightLeft"].dropna().mean()].count()/len(tmpData["Posture_RightLeft"]), #ADD
                             "Posture_Rear_Mean":tmpData["Posture_Rear"].dropna().mean(),
                             "Posture_Rear_Max":tmpData["Posture_Rear"].dropna().max(),
                             "Posture_Rear_Std":tmpData["Posture_Rear"].dropna().std(),
+                            "Posture_Rear_diffMax":tmpData["Posture_Rear"].dropna().diff().max(), #ADD
+                            "Posture_Rear_upperRaito":tmpData["Posture_Rear"][tmpData["Posture_Rear"]<tmpData["Posture_Rear"].dropna().mean()].count()/len(tmpData["Posture_Rear"]), #ADD
                             "Posture_Front_Mean":tmpData["Posture_Front"].dropna().mean(),
                             "Posture_Front_Max":tmpData["Posture_Front"].dropna().max(),
-                            "Posture_Front_Std":tmpData["Posture_Front"].dropna().std()
+                            "Posture_Front_Std":tmpData["Posture_Front"].dropna().std(),
+                            "Posture_Front_diffMax":tmpData["Posture_Front"].dropna().diff().max(), #ADD
+                            "Posture_Front_upperRaito":tmpData["Posture_Front"][tmpData["Posture_Front"]<tmpData["Posture_Front"].dropna().mean()].count()/len(tmpData["Posture_Front"]), #ADD
                             })
                     
                 OutputDataset=OutputDataset.append(tmpFeaturesData,ignore_index=True)
