@@ -29,6 +29,21 @@ labels=['One','Two', 'Three', 'Four','Five']
 usersdf_cmx=pd.DataFrame(np.zeros((5,5),dtype=int),index=labels, columns=labels)
 usersdf_result=pd.DataFrame()
 usersdf_feat_importance=pd.DataFrame()
+
+def strtoint1to5(x):
+    if x=="One":
+        return 1
+    if x=="Two":
+        return 2
+    if x=="Three":
+        return 3
+    if x=="Four":
+        return 4
+    if x=="Five":
+        return 5
+    
+    
+
 def print_cmx(y_true, y_pred):
     #labels = sorted(list(set(y_true)))
     
@@ -68,7 +83,6 @@ if __name__ == '__main__':
         # 使用する列の選択
         
         #print(list(df.keys()))
-        
         PCdatalist=[
                    # 'Curvature_075',
                     'KeyTypeBack_Count',
@@ -93,7 +107,34 @@ if __name__ == '__main__':
                   "Mousedisplacement_lower50"
                   ]
         
+        kyeboardlist=[
+                   # 'Curvature_075',
+                    'KeyTypeBack_Count',
+                  'KeyTypeDel_Count',
+                  'KeyTypeEnter_Count',
+                  "KeyTypeEnter_raito",#ADD
+                  'KeyType_Count',
+                  "mistyping_Count",
+                  "mistyping_raito"#ADD
+                  ]
+        Mouselist=[
+                   # 'Curvature_075',
+                  'Lclick_Mean',
+                  "Lclick_cnt", #ADD
+                  #'Lclick_Std',
+                  "Lclick_oneclick",
+                  "Lclick_doubleclick",
+                  "Rclick_Mean",
+                  #"Rclick_Std",
+                  #'Mclick_Mean',
+                  #'Mclick_Std',
+                  'MouseSpeed_Max',
+                  #'MouseWheel_Mean',
+                  'Mousedisplacement_Sum',
+                  "Mousedisplacement_lower50"
+                  ]
         Chairlist=[
+        "Compass_mean",
         'Rotation_Max',
         "Rotation_Min", #ADD
         'Rotation_Std', 
@@ -104,7 +145,7 @@ if __name__ == '__main__':
         ]
         
 
-        Chusionlist=["Compass_mean",
+        Chusionlist=[
                     #"Compass_std",
                     "Posture_RightLeft_Mean",
                     "Posture_RightLeft_Max",
@@ -131,8 +172,10 @@ if __name__ == '__main__':
         # command : usersdf_feat_importance.mean().sort_values(ascending=False).head(10).index
         
         # 説明変数、目的変数
-        X = df[PCdatalist+Chairlist+Chusionlist]
-        #X = df[BESTvariables]
+        #X = df[PCdatalist+Chairlist+Chusionlist]
+        #X = df[kyeboardlist+Mouselist+Chairlist+Chusionlist]
+        #X = df[kyeboardlist+Mouselist+Chairlist+Chusionlist]
+        X = df[BESTvariables]
         tmp=list()
         Qnum="Q4"
         tmp=copy.deepcopy(df[Qnum])
@@ -187,6 +230,7 @@ if __name__ == '__main__':
                 
             # 予測値を計算
             y_test_pred = forest.predict(X_test)
+            MAE=sklearn.metrics.mean_absolute_error( [strtoint1to5(x) for x in y_test], [strtoint1to5(x) for x in y_test_pred])
             Accuracy_randomforest=sklearn.metrics.accuracy_score(y_test, y_test_pred)
             Precision_randomforest=sklearn.metrics.precision_score(y_test, y_test_pred,average="weighted")
             Recall_randomforest=sklearn.metrics.recall_score(y_test, y_test_pred,average="weighted")
@@ -218,6 +262,7 @@ if __name__ == '__main__':
                                  "Precision":Precision_randomforest,
                                  "Recall":Recall_randomforest,
                                  "Fmeasure":Fmeasure_randomforest,
+                                 "MAE":MAE
                                     })
         
             df_result=df_result.append(tmpresult,ignore_index=True)
