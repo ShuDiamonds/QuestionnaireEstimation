@@ -311,6 +311,9 @@ if __name__ == '__main__':
     plt.savefig("./result/"+"confusion matrix-5grades_number ver.png", dpi=300)
     plt.show()
     
+    
+    #usersdf_cmx.sum(axis=1).plot(kind="bar") # 正解データの分布を表示
+    
     plt.figure(figsize = (10,7))
     df_cmx2=copy.copy(usersdf_cmx)
     a=[]
