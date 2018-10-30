@@ -175,7 +175,8 @@ if __name__ == '__main__':
         #X = df[PCdatalist+Chairlist+Chusionlist]
         #X = df[kyeboardlist+Mouselist+Chairlist+Chusionlist]
         #X = df[kyeboardlist+Mouselist+Chairlist+Chusionlist]
-        X = df[BESTvariables]
+        X = df[kyeboardlist+Mouselist+Chairlist+Chusionlist]
+        #X = df[BESTvariables]
         tmp=list()
         Qnum="Q4"
         tmp=copy.deepcopy(df[Qnum])
