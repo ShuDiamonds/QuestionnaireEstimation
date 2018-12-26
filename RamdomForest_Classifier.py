@@ -378,7 +378,7 @@ if __name__ == '__main__':
     usersdf_result.to_csv("./result/"+"usersdf_result.csv")
     print("################## 変数の重要度 ##################")
     print(usersdf_feat_importance.mean().sort_values(ascending=False))
-    usersdf_feat_importance.mean().sort_values(ascending=False).
+    usersdf_feat_importance.mean().sort_values(ascending=False).to_csv("./result/"+"feat_importance.csv")
     
     progress_e_time = time.time()
     progress_i_time = progress_e_time - progress_s_time
